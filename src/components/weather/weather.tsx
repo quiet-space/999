@@ -8,6 +8,9 @@ const Weather = () => {
     const [today, setToday] = useState('')
     const date = new Date()
 
+    const [teams, setTeams] = useState({})
+
+
     const getToday = () => {
         const date= new Date()
         const year = date.getFullYear()
@@ -38,14 +41,21 @@ const Weather = () => {
     }
 
     const getTeam = async () => {
-        try {
-            return await axios.get('https://www.naver.com/')
-            .then((res) => {
-                console.log(res.data)
-            })    
-        } catch (error) {
-            console.error(error)
-        }
+        const proxyUrl : (string) = process.env.REACT_APP_PROXY_SERVER_URL || ''
+
+        const map  = await axios.get(proxyUrl + '/teams')
+                .then(({data}) => {
+                    let map = {}
+                    data.forEach((team : Array<string>) => {
+                        map = {...map, [team[0]]: team}
+                    })
+                    return map
+                })   
+                
+                setTeams(map)
+
+                console.log(teams)
+
     }
 
 useEffect(() => {
